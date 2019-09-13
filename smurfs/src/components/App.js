@@ -1,5 +1,5 @@
 import React from "react";
-import { addSmurf } from "../actions";
+import { getSmurf } from "../actions";
 import  SmurfForm  from "./SmurfForm";
 import { connect } from 'react-redux';
 
@@ -28,4 +28,4 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps, {addSmurf})(App);
+export default connect(mapStateToProps, {getSmurf})(App);
