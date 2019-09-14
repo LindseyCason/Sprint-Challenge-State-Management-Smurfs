@@ -1,29 +1,28 @@
-import React, { useEffect, useState, useReducer } from "react";
-import { getSmurf, postSmurf, GET_SMURF_SUCCESS } from "../actions";
+import React, { useEffect, useState } from "react";
+import { getSmurf, postSmurf } from "../actions";
 import { connect } from "react-redux";
-import axios from "axios";
-import { initialState, reducer } from "../reducers"
 
-export const SmurfForm = ( { getSmurf, requested, name, age, height, id, error } )=> {
-const [newSmurf, setNewSmurf] = useState('');
-const [state, dispatch] = useReducer(reducer, initialState); //these are intentionally backwards
+
+
+export const SmurfForm = ( { getSmurf, smurfList, postSmurf, requested } )=> {
+const [newSmurf, setNewSmurf] = useState({ name: "", age: "", height: ""});
 
 const handleChanges = e => {
-    setNewSmurf(e.target.value);
+    setNewSmurf({...newSmurf, [e.target.name]: e.target.value});
   };
 
-//   const updateSmurf = e => {
-//     e.preventDefault();
-//     getSmurf();
-//     console.log("udpate smurf firing")
-//     //this is incorrect. This needs to dipatch an action with the payload of the new data accumulated from the form below on submit.
+const handleClick = e =>{
+    e.preventDefault();
+    postSmurf(newSmurf);
+    console.log("inside the handle click", newSmurf)
 
-//     //you may need to create a custom hook to store 
-//   };
+}
+console.log(newSmurf, "value of new smurf")
+
 
     useEffect(()=>{
         getSmurf()
-    }, [getSmurf, postSmurf])
+    }, [getSmurf])
 
 if (requested) {
     return <h3>ADDING YOUR SMURFY!</h3>
@@ -33,17 +32,24 @@ if (requested) {
 return(
 
   <div>
-      {/* <h2>SMURF LIST</h2>
-      <div>{name}</div>
-      <div>{age}</div>
-      <div>{height}</div> */}
-      <form type={onSubmit}>
+      <h2>SMURF LIST</h2>
+      {smurfList.map(smurf=>{
+          return(
+              <>
+              <div>{smurf.name}</div>
+                <div>{smurf.age}</div>
+            <div>{smurf.height}</div>
+            </> 
+         )
+      })}
+      
+      <form>
 
-Name: <input type="text"  defaultValue ="name" name="name" onChange={handleChanges} />
-Age: <input type="text" defaultValue="age" name="age" onChange={handleChanges}/>
-Height: <input type="text" defaultValue ="height" name="height" onChange={handleChanges}/>
+        Name: <input type="text"  value ={newSmurf.name} name="name" onChange={handleChanges} />
+        Age: <input type="text" value={newSmurf.age} name="age" onChange={handleChanges}/>
+        Height: <input type="text" value ={newSmurf.height} name="height" onChange={handleChanges}/>
 
-    <button onClick={()=>postSmurf(newSmurf)}>ADD SMURF</button>
+        <button onClick={handleClick}>ADD SMURF</button>
 
       </form>
     </div>  
@@ -54,10 +60,7 @@ Height: <input type="text" defaultValue ="height" name="height" onChange={handle
 
 const mapStateToProps = state => {
     return{
-        name: state.name,
-        age: state.age,
-        height: state.height,
-        id: state.id,
+        smurfList: state.smurfList,
         requested: state.requested
     }
 }
